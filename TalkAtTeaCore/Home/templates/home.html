@@ -1,0 +1,208 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Talk At Tea Menu</title>
+
+    <link rel="icon" type="image/x-icon" href="{% static 'TalkAtTea_Logo_1.jpg' %}">
+    <link rel="stylesheet" href="{% static 'HomeCSS/HomeStyle.css' %}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <style>
+      .MainCardContainer{
+        height: 250px;
+        overflow-x: auto; 
+        overflow-y: hidden; 
+        white-space: nowrap; 
+      }
+
+      .CardContainer {
+        padding: 10px;
+        justify-content: space-around;
+      }
+
+      .row{
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    
+    .card {
+        flex: 0 0 auto; 
+        width: 150px;
+        height: 200px;
+        background-color: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-right: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+    </style>
+
+  </head>
+  <body>
+
+    <div id="MainContainer">
+
+      <div id="VideoDivision">
+        <video id="IntroVideo" autoplay muted>
+          <source src="{% static 'TalkAtTea_Intro_Video.mp4' %}" type="video/mp4">    
+        </video>
+      </div>
+
+      <div id="ContentDivision">
+
+        {% comment %} Navbar Section Started {% endcomment %}
+        <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+          <div class="container-fluid">
+
+            <a class="navbar-brand" href="#">
+              <img src="{% static 'TalkAtTea_Logo_2.png' %}" alt="Logo" width="30" height="24" class="d-inline-block">
+              Talk At Tea
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="#">Menu</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" aria-current="page" href="#">My Orders</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" aria-current="page" href="#">Payment</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" aria-current="page" href="#">Send Reviews</a>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+        </nav>
+        {% comment %} Navbar Section Ended {% endcomment %}
+
+        {% comment %} Grid Cards Section Started {% endcomment %}
+        <div class="MainCardContainer">
+          <div class="CardContainer">
+            <div class="row">
+
+              <div class="col">
+                <div class="card">
+                  <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title">Coffee</h5>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card">
+                  <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title">Tea</h5>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card">
+                  <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title">Snacks</h5>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card">
+                  <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title">Maggie</h5>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card">
+                  <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title">Mocktails</h5>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card">
+                  <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title">Shakes</h5>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card">
+                  <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title">XYZ</h5>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card">
+                  <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title">XYZ</h5>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card">
+                  <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title">XYZ</h5>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card">
+                  <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title">XYZ</h5>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        {% comment %} Grid Cards Section Ended {% endcomment %}
+
+      </div>
+    </div>
+
+    <script type="text/javascript" src="{% static 'HomeJS/Home_Js.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

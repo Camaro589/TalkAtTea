@@ -14,7 +14,7 @@
     z-index: 1;
 }
 
-@media (max-width: 2048px){
+@media (max-width: 1024px){
     #MainContainer{
         position: relative;
         width: 100%;

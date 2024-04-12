@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Restaurants(models.Model):
     restaurant_id = models.AutoField(primary_key = True)
@@ -31,7 +32,7 @@ class Users(models.Model):
     last_name = models.CharField(max_length = 50)
     email = models.EmailField()
     mobile_number = models.IntegerField()
-    adderss = models.CharField(max_length = 200)
+    address = models.CharField(max_length = 200)
 
 
 class MediaStore(models.Model):
@@ -90,3 +91,12 @@ class Payment(models.Model):
 
     order_id = models.ForeignKey("Orders", on_delete = models.CASCADE)
     payment_status_id = models.ForeignKey("PaymentStatus", on_delete = models.CASCADE)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    address = models.CharField(max_length = 200)
+    city = models.CharField(max_length = 100)
+    country = models.CharField(max_length = 50)
+    postal_code = models.CharField(max_length = 50)
+    bio = models.CharField(max_length = 200)

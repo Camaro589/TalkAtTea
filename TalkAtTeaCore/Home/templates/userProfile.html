@@ -197,7 +197,7 @@
               <div class="card-header pb-0">
                 <div class="d-flex align-items-center">
                   <p class="mb-0">Edit Profile</p>
-                  <button class="btn btn-primary btn-sm ms-auto">Save Information</button>
+                  <button class="btn btn-primary btn-dark btn-sm ms-auto">Save Information</button>
                 </div>
               </div>
               <div class="card-body">
@@ -206,13 +206,13 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label for="example-text-input" class="form-control-label">Username</label>
-                      <input class="form-control" type="text" value="{{user.username}}">
+                      <input class="form-control" type="text" value="{{user.username}}" disabled>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
                       <label for="example-text-input" class="form-control-label">Email address</label>
-                      <input class="form-control" type="email" value="{{user.email}}">
+                      <input class="form-control" type="email" value="{{user.email}}" disabled>
                     </div>
                   </div>
                   <div class="col-md-6">
@@ -234,25 +234,25 @@
                   <div class="col-md-12">
                     <div class="form-group">
                       <label for="example-text-input" class="form-control-label">Address</label>
-                      <input class="form-control" type="text" value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09">
+                      <input class="form-control" type="text" value="{{user_profile.address}}">
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group">
                       <label for="example-text-input" class="form-control-label">City</label>
-                      <input class="form-control" type="text" value="New York">
+                      <input class="form-control" type="text" value="{{user_profile.city}}">
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group">
                       <label for="example-text-input" class="form-control-label">Country</label>
-                      <input class="form-control" type="text" value="United States">
+                      <input class="form-control" type="text" value="{{user_profile.country}}">
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group">
                       <label for="example-text-input" class="form-control-label">Postal code</label>
-                      <input class="form-control" type="text" value="437300">
+                      <input class="form-control" type="text" value="{{user_profile.postal_code}}">
                     </div>
                   </div>
                 </div>
@@ -262,10 +262,30 @@
                   <div class="col-md-12">
                     <div class="form-group">
                       <label for="example-text-input" class="form-control-label">Bio</label>
-                      <input class="form-control" type="text" value="A beautiful Dashboard for Bootstrap 5. It is Free and Open Source.">
+                      <input class="form-control" type="text" value="{{user_profile.bio}}">
                     </div>
                   </div>
                 </div>
+
+                <hr class="horizontal dark">
+                <button id="changePasswordButton" class="btn btn-primary btn-dark btn-sm ms-auto">Change Password</button>
+
+                <div id="changePassword" style="display: none;">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="example-text-input" class="form-control-label">New Password</label>
+                      <input class="form-control" type="password">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="example-text-input" class="form-control-label">Re-Enter New Password</label>
+                      <input class="form-control" type="password">
+                    </div>
+                  </div>
+                  <button class="btn btn-primary btn-sm">Save Password</button>
+                </div>
+
               </div>
             </div>
           </div>
@@ -288,6 +308,17 @@
       }
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
+  </script>
+
+  <script>
+    document.getElementById("changePasswordButton").addEventListener("click", function() {
+      var div = document.getElementById("changePassword");
+      if (div.style.display === "none") {
+        div.style.display = "block";
+      } else {
+        div.style.display = "none";
+      }
+    });
   </script>
   
   <script async defer src="https://buttons.github.io/buttons.js"></script>

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   
   <title>
-    {{ user.first_name }}'s Profile
+    User Profiles
   </title>
 
   <link rel="icon" type="image/x-icon" href="{% static 'TalkAtTea_Logo_1.jpg' %}">
@@ -61,7 +61,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link " href="#">
+          <a class="nav-link active" href="#">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
               <i class="ni ni-support-16 text-info text-sm opacity-10"></i>
             </div>
@@ -69,7 +69,7 @@
           </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="#">
+            <a class="nav-link" href="{% url 'userProfile' %}">
                 <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                 <i class="ni ni-single-02 text-info text-sm"></i>
                 </div>
@@ -88,9 +88,9 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="#">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-white active" aria-current="page">{{ user.first_name }}'s Profile</li>
+            <li class="breadcrumb-item text-sm text-white active" aria-current="page">User Profiles</li>
           </ol>
-          <h6 class="font-weight-bolder text-white mb-0">Profile View</h6>
+          <h6 class="font-weight-bolder text-white mb-0">User Profile View</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -160,151 +160,113 @@
     </nav>
     <!-- End Navbar -->
 
-    {% comment %} Profile Page Start's {% endcomment %}
+    {% comment %} All User Profiles {% endcomment %}
 
-      <div class="card shadow-lg mx-4 card-profile-bottom">
-        <div class="card-body p-3">
-          <div class="row gx-4">
-            {% comment %} <div class="col-auto">
-              <div class="avatar avatar-xl position-relative">
-                <img src="../assets/img/team-1.jpg" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
+    <div class="container-fluid py-4">
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card mb-4">
+              <div class="card-header pb-0">
+                <h6>Users Table</h6>
               </div>
-            </div> {% endcomment %}
-            <div class="col-auto my-auto">
-              <div class="h-100">
-                <h5 class="mb-1">
-                  {{user.first_name}} {{user.last_name}}
-                </h5>
-                <p class="mb-0 font-weight-bold text-sm">
-                  Role: 
-                    {% if user.is_superuser %}
-                    Super-Admin
-                    {% else %}
-                    Admin
-                    {% endif %}
-                </p>
+              <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-0">
+                  <table class="table align-items-center mb-0">
+                    <thead>
+                      <tr>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Username</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Is Super-User</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Is Active</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Joined</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Logged In</th>
+                        <th class="text-secondary opacity-7"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+                      {% for user in userDetails %}
+                      <tr>
+                        <td>
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <a id="" href="#" class="text-secondary font-weight-bold" onclick="getUserDetails({{user.id}})">
+                                <h6 class="mb-0 text-sm">{{user.first_name}} {{user.last_name}}</h6>
+                              </a>
+                              <p class="text-xs text-secondary mb-0">{{user.email}}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                            <p class="text-xs font-weight-bold mb-0">{{user.username}}</p>
+                        </td>
+                        <td class="align-middle text-center text-sm">
+                          {% if user.is_superuser %}
+                            <span class="badge badge-sm bg-gradient-primary">Yes</span>
+                          {% else %}
+                            <span class="badge badge-sm bg-gradient-warning">No</span>
+                          {% endif %}
+                        </td>
+                        <td class="align-middle text-center text-sm">
+                          {% if user.is_active %}
+                            <span class="badge badge-sm bg-gradient-success">Yes</span>
+                          {% else %}
+                            <span class="badge badge-sm bg-gradient-warning">No</span>
+                          {% endif %}
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">{{user.date_joined}}</span>
+                          </td>
+                        <td class="align-middle text-center">
+                          <span class="text-secondary text-xs font-weight-bold">{{user.last_login}}</span>
+                        </td>
+                        <td class="align-middle">
+                          <a href="#" onclick="showDeleteUserButton()" class="text-primary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                            Edit
+                          </a>
+                        </td>
+                      </tr>
+                      {% endfor %}
+
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="container-fluid py-4">
-        <div class="row">
-          <div class="col-md-12">
+        <div id="userInformationDiv" class="row" style="display:none;">
+          <div class="col-12">
+            <div class="card mb-4">
+              <div class="card-header pb-0 px-3">
+                <h6>User Information</h6>
+              </div>
+              <div class="card-body pt-4 p-3">
 
-            <div class="user-information-division">
-              <form action="{% url 'saveAdminUserDetails' %}" method="post" class="signin-form">
-              {% csrf_token %}
-                <div class="card">
-                  <div class="card-header pb-0">
-                    <div class="d-flex align-items-center">
-                      <p class="mb-0">Edit Profile</p>
-                      <button class="btn btn-primary btn-dark btn-sm ms-auto">Save Information</button>
+                <ul class="list-group">
+                  <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
+                    <div class="d-flex flex-column">
+                      <h6 class="mb-3 text-sm">Oliver Liam</h6>
+                      <span class="mb-2 text-xs">Company Name: <span class="text-dark font-weight-bold ms-sm-2">Viking Burrito</span></span>
+                      <span class="mb-2 text-xs">Email Address: <span class="text-dark ms-sm-2 font-weight-bold">oliver@burrito.com</span></span>
+                      <span class="text-xs">VAT Number: <span class="text-dark ms-sm-2 font-weight-bold">FRB1235476</span></span>
                     </div>
-                  </div>
-                  <div class="card-body">
-                    <p class="text-uppercase text-sm">User Information</p>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">Username</label>
-                          <input class="form-control" type="text" value="{{user.username}}" name="username" disabled>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">Email address</label>
-                          <input class="form-control" type="email" value="{{user.email}}" name="userEmail" disabled>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">First name</label>
-                          <input class="form-control" type="text" value="{{user.first_name}}" name="firstName">
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">Last name</label>
-                          <input class="form-control" type="text" value="{{user.last_name}}" name="lastName">
-                        </div>
-                      </div>
+                    <div class="ms-auto text-end">
+                      <a id="deleteUserButton" class="btn btn-link text-danger text-gradient px-3 mb-0" href="#" style="display: none;"><i class="far fa-trash-alt me-2"></i>Delete User</a>
                     </div>
-                    <hr class="horizontal dark">
-                    <p class="text-uppercase text-sm">Contact Information</p>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">Address</label>
-                          <input class="form-control" type="text" value="{{user_profile.address}}" name="userAddress">
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">City</label>
-                          <input class="form-control" type="text" value="{{user_profile.city}}" name="userCity">
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">Country</label>
-                          <input class="form-control" type="text" value="{{user_profile.country}}" name="userCountry">
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">Postal code</label>
-                          <input class="form-control" type="text" value="{{user_profile.postal_code}}" name="userPostalCode">
-                        </div>
-                      </div>
-                    </div>
-                    <hr class="horizontal dark">
-                    <p class="text-uppercase text-sm">About me</p>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">Bio</label>
-                          <input class="form-control" type="text" value="{{user_profile.bio}}" name="userBio">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </form>
-            </div>
+                  </li>
+                </ul>
 
-            <div class="card shadow-lg" style="margin-top: 15px;">
-              <div class="card-body p-3">
-                <div class="user-password-division">
-                  <button id="changePasswordButton" class="btn btn-primary btn-dark btn-sm ms-auto">Change Password</button>
-
-                  <div id="changePassword" style="display: none;">
-                    <form action="{% url 'saveAdminUserPassword' %}" method="post" class="signin-form" onsubmit="return validateForm()">
-                      {% csrf_token %}
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">New Password</label>
-                          <input id="newPassword" class="form-control" type="password" name="newPassword">
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label for="example-text-input" class="form-control-label">Re-Enter New Password</label>
-                          <input id="confirmPassword" class="form-control" type="password">
-                        </div>
-                      </div>
-                      <button class="btn btn-primary btn-sm">Save Password</button>
-                    </form>
-                  </div>
-
-                </div>
               </div>
             </div>
-
           </div>
+        </div>
 
-    {% comment %} Profile Page Ends {% endcomment %}
+    </div>
+
+    {% comment %} All User Profiles {% endcomment %}
     
   </main>
 
@@ -322,38 +284,49 @@
       }
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
-  </script>
-
-  <script>
-    document.getElementById("changePasswordButton").addEventListener("click", function() {
-      var div = document.getElementById("changePassword");
-      if (div.style.display === "none") {
-        div.style.display = "block";
-      } else {
-        div.style.display = "none";
-      }
-    });
-  </script>
-
-  <script>
-    function validateForm() {
-      var newPassword = document.getElementById("newPassword").value;
-      var confirmPassword = document.getElementById("confirmPassword").value;
-    
-      if (newPassword.length < 8) {
-        alert("New password must be at least 8 characters long.");
-        return false;
-      }
-    
-      if (newPassword !== confirmPassword) {
-        alert("New password and confirm password do not match.");
-        return false;
-      }
-    
-      return true;
-    }
     </script>
-  
+
+    <script>
+      function showUserInformationDivision(){
+        var div = document.getElementById("userInformationDiv");
+        if (div.style.display === "none") {
+          div.style.display = "block";
+        } else {
+          div.style.display = "none";
+        }
+      };
+    </script>
+
+    <script>
+      function getUserDetails(id) {
+        var deleteButton = document.getElementById("deleteUserButton");
+        if(deleteButton.style.display === "none"){
+          showUserInformationDivision();
+        }
+        var deleteButton = document.getElementById("deleteUserButton");
+        deleteButton.style.display = "none";
+      }
+    </script>
+
+    <script>
+      function showDeleteUserButton(){
+        var div = document.getElementById("userInformationDiv");
+        var deleteButton = document.getElementById("deleteUserButton");
+
+        if(div.style.display === "block" && deleteButton.style.display === "block"){
+          var userDiv = document.getElementById("userInformationDiv");
+          userDiv.style.display = "none"
+          deleteButton.style.display = "none";
+        }
+        else{
+          if (div.style.display === "none") {
+            div.style.display = "block";
+          }
+          deleteButton.style.display = "block";
+        }
+      };
+    </script>
+
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <script src="{% static 'AdminDashboardJs/adminDashboard.min.js' %}"></script>
 

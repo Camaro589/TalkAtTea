@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import *
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from .models import *
+from django.http import JsonResponse
 
 def view_home(request):
     return render(request, "home.html")
@@ -14,36 +15,35 @@ def view_admin_dashboard(request):
 
 def dashboard(request):
 
-    if request.user.is_authenticated:
-        if(request.method == 'POST'):
+    if(request.method == 'POST'):
 
-            username = request.POST.get('Username')
-            password = request.POST.get('Password')
+        username = request.POST.get('Username')
+        password = request.POST.get('Password')
 
-            try:
-                user = User.objects.get(username = username)
-            except User.DoesNotExist:
-                context = {'error_message': "Username does not exist"}
-                request.session['dashboard_login_error_message'] = context
-            
-                return redirect('view_admin_dashboard')
-            
-            user = authenticate(request, username = username, password = password)
-
-            if user is not None:
-                login(request, user)
-                return render(request, "dashboard.html")
-            else:
-                context = {'error_message': "Invalid Credentials"}
-                request.session['dashboard_login_error_message'] = context
-            
-                return redirect('view_admin_dashboard')
+        try:
+            user = User.objects.get(username = username)
+        except User.DoesNotExist:
+            context = {'error_message': "Username does not exist"}
+            request.session['dashboard_login_error_message'] = context
         
-        else:
+            return redirect('view_admin_dashboard')
+        
+        user = authenticate(request, username = username, password = password)
+
+        if user is not None:
+            login(request, user)
             return render(request, "dashboard.html")
+        else:
+            context = {'error_message': "Invalid Credentials"}
+            request.session['dashboard_login_error_message'] = context
         
+            return redirect('view_admin_dashboard')
+    
     else:
-        return redirect('view_admin_dashboard')
+        if request.user.is_authenticated:
+            return render(request, "dashboard.html")
+        else:
+            return redirect('view_admin_dashboard')
     
 def user_profile(request):
 
@@ -59,4 +59,78 @@ def user_profile(request):
         return render(request, "userProfile.html", context = context)
     
     else:
-        return redirect('view_admin_dashboard') 
+        return redirect('view_admin_dashboard')
+    
+def save_admin_user_details(request):
+
+    if request.user.is_authenticated:
+        current_user_id = request.user.id
+
+        first_name = request.POST.get('firstName')
+        last_name = request.POST.get('lastName')
+        user_address = request.POST.get('userAddress')
+        user_city = request.POST.get('userCity')
+        user_country = request.POST.get('userCountry')
+        user_postal_code = request.POST.get('userPostalCode')
+        user_bio = request.POST.get('userBio')
+
+        try:
+            user = User.objects.get(id = current_user_id)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+
+            admin_user_profile = UserProfile.objects.filter(user_id = current_user_id)
+
+            if len(admin_user_profile) == 0:
+                profile = UserProfile.objects.create(user_id = current_user_id)
+
+            admin_user_details = UserProfile.objects.get(user_id = current_user_id)
+            admin_user_details.address = user_address
+            admin_user_details.city = user_city
+            admin_user_details.country = user_country
+            admin_user_details.postal_code = user_postal_code
+            admin_user_details.bio = user_bio
+
+            admin_user_details.save()
+
+        except:
+            return redirect('userProfile')
+
+        return redirect('userProfile')
+    
+    else:
+        return redirect('view_admin_dashboard')
+    
+def save_admin_user_password(request):
+
+    if request.user.is_authenticated:
+
+        current_user_id = request.user.id
+        new_password = request.POST.get("newPassword")
+
+        try:
+            user = User.objects.get(id = current_user_id)
+            user.set_password(new_password)
+            user.save()
+        except:
+            return redirect('userProfile')
+        
+        context = {'error_message': "After Password Change please Log-in again to continue."}
+        request.session['dashboard_login_error_message'] = context
+
+        return redirect('view_admin_dashboard')
+
+    else:
+        return redirect('view_admin_dashboard')
+    
+def show_all_user_profiles(request):
+
+    if request.user.is_authenticated:
+        userDetails = User.objects.all().order_by('-pk')
+        context = {'userDetails' : userDetails}
+
+        return render(request, 'allUserProfiles.html', context = context)
+
+    else:
+        return redirect('view_admin_dashboard')

@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from Home.views import *
-import debug_toolbar
 
 urlpatterns = [
     path('adminLogin/', admin.site.urls),
@@ -25,4 +24,7 @@ urlpatterns = [
     path('admin/', view_admin_dashboard, name = "view_admin_dashboard"),
     path('dashboard/', dashboard, name = "dashboard"),
     path('userProfile/', user_profile, name = "userProfile"),
+    path('saveAdminUserDetails/', save_admin_user_details, name = "saveAdminUserDetails"),
+    path('saveAdminUserPassword/', save_admin_user_password, name = "saveAdminUserPassword"),
+    path('showAllUserProfiles/', show_all_user_profiles, name = "showAllUserProfiles"),
 ]

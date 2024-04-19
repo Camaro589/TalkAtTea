@@ -181,51 +181,57 @@
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Is Active</th>
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date Joined</th>
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Logged In</th>
+                        {% if user.is_superuser %}
                         <th class="text-secondary opacity-7"></th>
+                        {% endif %}
                       </tr>
                     </thead>
                     <tbody>
 
-                      {% for user in userDetails %}
+                      {% for singleUser in userDetails %}
                       <tr>
                         <td>
                           <div class="d-flex px-2 py-1">
                             <div class="d-flex flex-column justify-content-center">
-                              <a id="" href="#" class="text-secondary font-weight-bold" onclick="getUserDetails({{user.id}})">
-                                <h6 class="mb-0 text-sm">{{user.first_name}} {{user.last_name}}</h6>
+                              <a id="" href="#" class="text-secondary font-weight-bold" onclick="getUserDetails({{singleUser.id}})">
+                                <h6 class="mb-0 text-sm">{{singleUser.first_name}} {{singleUser.last_name}}</h6>
                               </a>
-                              <p class="text-xs text-secondary mb-0">{{user.email}}</p>
+                              <p class="text-xs text-secondary mb-0">{{singleUser.email}}</p>
                             </div>
                           </div>
                         </td>
                         <td>
-                            <p class="text-xs font-weight-bold mb-0">{{user.username}}</p>
+                            <p class="text-xs font-weight-bold mb-0">{{singleUser.username}}</p>
                         </td>
                         <td class="align-middle text-center text-sm">
-                          {% if user.is_superuser %}
+                          {% if singleUser.is_superuser %}
                             <span class="badge badge-sm bg-gradient-primary">Yes</span>
                           {% else %}
                             <span class="badge badge-sm bg-gradient-warning">No</span>
                           {% endif %}
                         </td>
                         <td class="align-middle text-center text-sm">
-                          {% if user.is_active %}
+                          {% if singleUser.is_active %}
                             <span class="badge badge-sm bg-gradient-success">Yes</span>
                           {% else %}
                             <span class="badge badge-sm bg-gradient-warning">No</span>
                           {% endif %}
                         </td>
                         <td class="align-middle text-center">
-                            <span class="text-secondary text-xs font-weight-bold">{{user.date_joined}}</span>
+                            <span class="text-secondary text-xs font-weight-bold">{{singleUser.date_joined}}</span>
                           </td>
                         <td class="align-middle text-center">
-                          <span class="text-secondary text-xs font-weight-bold">{{user.last_login}}</span>
+                          <span class="text-secondary text-xs font-weight-bold">{{singleUser.last_login}}</span>
                         </td>
+                        {% if user.is_superuser %}
                         <td class="align-middle">
-                          <a href="#" onclick="showDeleteUserButton()" class="text-primary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                          {% if not singleUser.is_superuser %}
+                          <a href="#" onclick="showDeleteUserButton({{singleUser.id}})" class="text-primary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
                             Edit
                           </a>
+                          {% endif %}
                         </td>
+                        {% endif %}
                       </tr>
                       {% endfor %}
 
@@ -248,10 +254,15 @@
                 <ul class="list-group">
                   <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
                     <div class="d-flex flex-column">
-                      <h6 class="mb-3 text-sm">Oliver Liam</h6>
-                      <span class="mb-2 text-xs">Company Name: <span class="text-dark font-weight-bold ms-sm-2">Viking Burrito</span></span>
-                      <span class="mb-2 text-xs">Email Address: <span class="text-dark ms-sm-2 font-weight-bold">oliver@burrito.com</span></span>
-                      <span class="text-xs">VAT Number: <span class="text-dark ms-sm-2 font-weight-bold">FRB1235476</span></span>
+                      <h6 id="fullName" class="mb-3 text-sm"></h6>
+                      <span class="mb-2 text-xs">Email Address: <span id="emailAddress" class="text-dark ms-sm-2 font-weight-bold"></span></span>
+                      <span class="mb-2 text-xs">Primary Mobile Number: <span id="primaryNumber" class="text-dark ms-sm-2 font-weight-bold"></span></span>
+                      <span class="mb-2 text-xs">Alternate Mobile Number: <span id="alternateNumber" class="text-dark ms-sm-2 font-weight-bold"></span></span>
+                      <span class="mb-2 text-xs">Residence Address: <span id="residenceAddress" class="text-dark ms-sm-2 font-weight-bold"></span></span>
+                      <span class="mb-2 text-xs">City: <span id="city" class="text-dark ms-sm-2 font-weight-bold"></span></span>
+                      <span class="mb-2 text-xs">Country: <span id="country" class="text-dark ms-sm-2 font-weight-bold"></span></span>
+                      <span class="mb-2 text-xs">Postal Code: <span id="postalCode" class="text-dark ms-sm-2 font-weight-bold"></span></span>
+                      <span class="mb-2 text-xs">Bio: <span id="bio" class="text-dark ms-sm-2 font-weight-bold"></span></span>
                     </div>
                     <div class="ms-auto text-end">
                       <a id="deleteUserButton" class="btn btn-link text-danger text-gradient px-3 mb-0" href="#" style="display: none;"><i class="far fa-trash-alt me-2"></i>Delete User</a>
@@ -263,6 +274,74 @@
             </div>
           </div>
         </div>
+
+        {% if user.is_superuser %}
+        <div class="row">
+          <div class="col-sm-10"><span></span></div>
+          <div class="col-sm-2"><span><button type="button" class="btn bg-gradient-primary btn-sm" onclick="showCreateUserDiv()">Add New User</button></span></div>
+        </div>
+
+        <div id="createUserDiv" class="row" style="display:none;">
+          <div class="col-12">
+            <div class="card mb-4">
+              <div class="card-header pb-0 px-3">
+                <h6>Create User</h6>
+              </div>
+              <div class="card-body pt-4 p-3">
+
+                <form id="submitUser" method="post" onsubmit="createNewUser(event)">
+                {% csrf_token %}
+                  <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" class="form-control" id="cu_firstName" required>
+
+                    <label>Last Name</label>
+                    <input type="text" class="form-control" id="cu_lastName">
+
+                    <label>Mobile Number</label>
+                    <div class="row">
+                      <div class="col-1">
+                        <input type="text" class="form-control" value="+91">
+                      </div>
+                      <div class="col-11">
+                        <input type="number" min="1000000000" max="9999999999" class="form-control" id="cu_mobileNumber">
+                      </div>
+                    </div>
+
+                    <label>Email address</label>
+                    <input type="email" class="form-control" id="cu_emailAddress" placeholder="name@example.com" required>
+
+                    <label>Address</label>
+                    <textarea class="form-control" id="cu_address" rows="3"></textarea>
+
+                    <label>City</label>
+                    <input type="text" class="form-control" id="cu_city">
+
+                    <label>Country</label>
+                    <input type="text" class="form-control" id="cu_country">
+                  </div>
+                  <hr class="horizontal dark">
+                  <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" class="form-control" id="cu_username" required>
+
+                    <label>Initial Password</label>
+                    <input type="text" class="form-control" id="cu_password" value="talkattea" required>
+                  </div>
+                  <div class="form-group">
+                    <input class="form-check-input" type="checkbox" style="border:2px solid;" id="cu_isSuperUser">
+                    <label class="custom-control-label" for="cu_isSuperUser">Is Super-User ?</label>
+                  </div>
+                  <div class="form-group">
+                    <button class="btn btn-primary btn-sm">Create User</button>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
 
     </div>
 
@@ -276,14 +355,14 @@
   <script src="{% static 'AdminDashboardJs/smooth-scrollbar.min.js' %}"></script>
   <script src="{% static 'AdminDashboardJs/chartjs.min.js' %}"></script>
 
-  <script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
+    <script>
+      var win = navigator.platform.indexOf('Win') > -1;
+      if (win && document.querySelector('#sidenav-scrollbar')) {
+        var options = {
+          damping: '0.5'
+        }
+        Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
       }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
     </script>
 
     <script>
@@ -302,6 +381,7 @@
         var deleteButton = document.getElementById("deleteUserButton");
         if(deleteButton.style.display === "none"){
           showUserInformationDivision();
+          getUserProfileDetails(id);
         }
         var deleteButton = document.getElementById("deleteUserButton");
         deleteButton.style.display = "none";
@@ -309,7 +389,7 @@
     </script>
 
     <script>
-      function showDeleteUserButton(){
+      function showDeleteUserButton(id){
         var div = document.getElementById("userInformationDiv");
         var deleteButton = document.getElementById("deleteUserButton");
 
@@ -320,12 +400,138 @@
         }
         else{
           if (div.style.display === "none") {
+            getUserProfileDetails(id);
             div.style.display = "block";
           }
           deleteButton.style.display = "block";
         }
       };
     </script>
+
+    <script>
+      function getUserProfileDetails(id) {
+        var userId = Number(id);
+        fetch('/getUserDetails/' + userId)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+              var tableContentDiv = document.getElementById('tableContent');
+              
+              var user_details = JSON.parse(data.userDetails);
+              var user_profile_details = JSON.parse(data.userProfileDetails);
+
+              document.getElementById("fullName").innerHTML = user_details[0].fields.first_name + " " + user_details[0].fields.last_name;
+              document.getElementById("emailAddress").innerHTML = user_details[0].fields.email;
+              document.getElementById("primaryNumber").innerHTML = user_profile_details[0].fields.primary_mobile_number;
+              document.getElementById("alternateNumber").innerHTML = user_profile_details[0].fields.alternate_mobile_number;
+              document.getElementById("residenceAddress").innerHTML = user_profile_details[0].fields.address;
+              document.getElementById("city").innerHTML = user_profile_details[0].fields.city;
+              document.getElementById("country").innerHTML = user_profile_details[0].fields.country;
+              document.getElementById("postalCode").innerHTML = user_profile_details[0].fields.postal_code;
+              document.getElementById("bio").innerHTML = user_profile_details[0].fields.bio;
+              
+            })
+            .catch(error => {
+                console.error('There was a problem with getting USer Details', error);
+            });
+      }
+    </script>
+
+    {% if user.is_superuser %}
+    <script>
+      function showCreateUserDiv(){
+        var div = document.getElementById("createUserDiv");
+        if (div.style.display === "none") {
+          div.style.display = "block";
+        } else {
+          div.style.display = "none";
+        }
+      };
+    </script>
+
+    <script>
+      function handleSubmit(event) {
+          event.preventDefault();
+      }
+    </script>
+
+    <script>
+      function createNewUser(event){
+        handleSubmit(event);
+        var cu_firstName = document.getElementById("cu_firstName");
+        var cu_lastName = document.getElementById("cu_lastName");
+        var cu_mobileNumber = document.getElementById("cu_mobileNumber");
+        var cu_emailAddress = document.getElementById("cu_emailAddress");
+        var cu_address = document.getElementById("cu_address");
+        var cu_city = document.getElementById("cu_city");
+        var cu_country = document.getElementById("cu_country");
+        var cu_username = document.getElementById("cu_username");
+        var cu_password = document.getElementById("cu_password");
+        var cu_isSuperUser = document.getElementById("cu_isSuperUser");
+        
+        const csrftoken = getCookie('csrftoken');
+
+        fetch('/createNewUser', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify({
+            'firstName': cu_firstName.value,
+            'lastName': cu_lastName.value,
+            'mobile': cu_mobileNumber.value,
+            'email': cu_emailAddress.value,
+            'address': cu_address.value,
+            'city': cu_city.value,
+            'country': cu_country.value,
+            'username': cu_username.value,
+            'password': cu_password.value,
+            'isSuperUser': cu_isSuperUser.checked
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+          if(data.hasError){
+            alert(data.message);
+          }
+          else{
+            window.location.reload(true);
+          }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+        
+      };
+    </script>
+
+    <script>
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+      }
+    </script>
+    {% endif %}
 
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <script src="{% static 'AdminDashboardJs/adminDashboard.min.js' %}"></script>

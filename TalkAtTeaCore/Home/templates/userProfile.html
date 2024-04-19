@@ -61,7 +61,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link " href="#">
+          <a class="nav-link " href="{% url 'showAllUserProfiles' %}">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
               <i class="ni ni-support-16 text-info text-sm opacity-10"></i>
             </div>
@@ -234,6 +234,30 @@
                     <hr class="horizontal dark">
                     <p class="text-uppercase text-sm">Contact Information</p>
                     <div class="row">
+                      <div class="col-md-1">
+                        <div class="form-group">
+                          <label for="example-text-input" class="form-control-label">&nbsp</label>
+                          <input class="form-control" type="text" value="+91" disabled>
+                        </div>
+                      </div>
+                      <div class="col-md-5">
+                        <div class="form-group">
+                          <label for="example-text-input" class="form-control-label">Primary Mobile Number</label>
+                          <input class="form-control" type="number" min="1000000000" max="9999999999" value="{{user_profile.primary_mobile_number}}" name="primaryMobileNumber">
+                        </div>
+                      </div>
+                      <div class="col-md-1">
+                        <div class="form-group">
+                          <label for="example-text-input" class="form-control-label">&nbsp</label>
+                          <input class="form-control" type="text" value="+91" disabled>
+                        </div>
+                      </div>
+                      <div class="col-md-5">
+                        <div class="form-group">
+                          <label for="example-text-input" class="form-control-label">Alternate Mobile Number</label>
+                          <input class="form-control" type="number" min="1000000000" max="9999999999" value="{{user_profile.alternate_mobile_number}}" name="alternateMobileNumber">
+                        </div>
+                      </div>
                       <div class="col-md-12">
                         <div class="form-group">
                           <label for="example-text-input" class="form-control-label">Address</label>

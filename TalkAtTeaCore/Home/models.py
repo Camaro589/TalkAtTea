@@ -100,3 +100,5 @@ class UserProfile(models.Model):
     country = models.CharField(max_length = 50)
     postal_code = models.CharField(max_length = 50)
     bio = models.CharField(max_length = 200)
+    primary_mobile_number = models.CharField(max_length=10, null = True)
+    alternate_mobile_number = models.CharField(max_length=10, null = True)

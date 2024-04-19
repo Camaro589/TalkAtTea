@@ -3,6 +3,8 @@ from django.contrib.auth.models import *
 from django.contrib.auth import authenticate, login, logout
 from .models import *
 from django.http import JsonResponse
+from django.core.serializers import serialize
+import json
 
 def view_home(request):
     return render(request, "home.html")
@@ -68,6 +70,8 @@ def save_admin_user_details(request):
 
         first_name = request.POST.get('firstName')
         last_name = request.POST.get('lastName')
+        primary_mobile_number = request.POST.get('primaryMobileNumber')
+        alternate_mobile_number = request.POST.get('alternateMobileNumber')
         user_address = request.POST.get('userAddress')
         user_city = request.POST.get('userCity')
         user_country = request.POST.get('userCountry')
@@ -87,6 +91,8 @@ def save_admin_user_details(request):
 
             admin_user_details = UserProfile.objects.get(user_id = current_user_id)
             admin_user_details.address = user_address
+            admin_user_details.primary_mobile_number = primary_mobile_number
+            admin_user_details.alternate_mobile_number = alternate_mobile_number
             admin_user_details.city = user_city
             admin_user_details.country = user_country
             admin_user_details.postal_code = user_postal_code
@@ -134,3 +140,91 @@ def show_all_user_profiles(request):
 
     else:
         return redirect('view_admin_dashboard')
+
+def get_user_details_with_id(request, user_id):
+
+    if request.user.is_authenticated:
+
+        try:
+            user_details = User.objects.get(id = user_id)
+            user_profile_details = UserProfile.objects.get(user_id = user_id)
+
+            serialized_user_Details = serialize('json', [user_details])
+            serialized_user_profile_details= serialize('json', [user_profile_details])
+
+            data = {
+                'userDetails': serialized_user_Details,
+                'userProfileDetails': serialized_user_profile_details
+                }
+
+            return JsonResponse(data, status = 200, safe = False)
+        except Exception as error:
+            data = {
+                'error_message': 'Error in fetching data.'
+                }
+
+            return JsonResponse(data, status = 500)
+    
+    else:
+        data = {
+            'error_message': 'You are not authenticated to access this data.'
+            }
+        return JsonResponse(data, status = 401)
+
+def create_new_user(request):
+
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+
+            try:
+                post_data = json.loads(request.body)
+                
+                firstName = post_data.get('firstName')
+                lastName = post_data.get('lastName')
+                mobile = post_data.get('mobile')
+                email = post_data.get('email')
+                address = post_data.get('address')
+                city = post_data.get('city')
+                country = post_data.get('country')
+                username = post_data.get('username')
+                password = post_data.get('password')
+                is_super_user = post_data.get('isSuperUser')
+
+                print(firstName, lastName, mobile, email, address, city, country, username, password, is_super_user)
+                if(User.objects.filter(username = username).exists()):
+                    data = {"message": "Username \"" + username + "\" already exists. Please provide a different username.",
+                            'hasError': True
+                            }
+                    return JsonResponse(data)
+                if(User.objects.filter(email = email).exists()):
+                    data = {"message": "Email \"" + email + "\" already exists. Please provide a different Email.",
+                            'hasError': True
+                            }
+                    return JsonResponse(data)
+                
+                user = User.objects.create_user(first_name = firstName, last_name = lastName, username = username, password = password, email = email, is_superuser = is_super_user)
+                user.save()
+                print("Done till here..")
+
+                profile = UserProfile.objects.create(user_id = user.pk)
+                user_profile_details = UserProfile.objects.get(user_id = user.pk)
+                user_profile_details.primary_mobile_number = mobile
+                user_profile_details.address = address
+                user_profile_details.city = city
+                user_profile_details.country = country
+                user_profile_details.save()
+
+                data = {"message": "User Created", "hasErrors": False}
+                return JsonResponse(data)
+            
+            except Exception as error:
+                data = {"message": error,
+                            'hasError': True
+                            }
+                return JsonResponse(data)
+        else:
+            data = {"message": "fail"}
+            return JsonResponse(data)
+    else:
+        data = {"message": "fail"}
+        return JsonResponse(data)

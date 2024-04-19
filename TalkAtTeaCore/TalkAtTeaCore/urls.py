@@ -27,4 +27,6 @@ urlpatterns = [
     path('saveAdminUserDetails/', save_admin_user_details, name = "saveAdminUserDetails"),
     path('saveAdminUserPassword/', save_admin_user_password, name = "saveAdminUserPassword"),
     path('showAllUserProfiles/', show_all_user_profiles, name = "showAllUserProfiles"),
+    path('getUserDetails/<int:user_id>', get_user_details_with_id, name = "getUserDetails"),
+    path('createNewUser', create_new_user, name = "createNewUser"),
 ]

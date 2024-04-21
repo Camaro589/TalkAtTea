@@ -193,7 +193,7 @@
                         <td>
                           <div class="d-flex px-2 py-1">
                             <div class="d-flex flex-column justify-content-center">
-                              <a id="" href="#" class="text-secondary font-weight-bold" onclick="getUserDetails({{singleUser.id}})">
+                              <a href="#" class="text-secondary font-weight-bold" onclick="getUserDetails({{singleUser.id}})">
                                 <h6 class="mb-0 text-sm">{{singleUser.first_name}} {{singleUser.last_name}}</h6>
                               </a>
                               <p class="text-xs text-secondary mb-0">{{singleUser.email}}</p>
@@ -255,6 +255,8 @@
                   <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
                     <div class="d-flex flex-column">
                       <h6 id="fullName" class="mb-3 text-sm"></h6>
+                      <span class="mb-2 text-xs">User ID: <span id="userId" class="text-dark ms-sm-2 font-weight-bold"></span></span>
+                      <span class="mb-2 text-xs">Role: <span id="userRole" class="text-dark ms-sm-2 font-weight-bold"></span></span>
                       <span class="mb-2 text-xs">Email Address: <span id="emailAddress" class="text-dark ms-sm-2 font-weight-bold"></span></span>
                       <span class="mb-2 text-xs">Primary Mobile Number: <span id="primaryNumber" class="text-dark ms-sm-2 font-weight-bold"></span></span>
                       <span class="mb-2 text-xs">Alternate Mobile Number: <span id="alternateNumber" class="text-dark ms-sm-2 font-weight-bold"></span></span>
@@ -265,7 +267,28 @@
                       <span class="mb-2 text-xs">Bio: <span id="bio" class="text-dark ms-sm-2 font-weight-bold"></span></span>
                     </div>
                     <div class="ms-auto text-end">
-                      <a id="deleteUserButton" class="btn btn-link text-danger text-gradient px-3 mb-0" href="#" style="display: none;"><i class="far fa-trash-alt me-2"></i>Delete User</a>
+
+                      <a id="deleteUserButton" class="btn btn-link text-danger text-gradient px-3 mb-0" style="display: none;" data-bs-toggle="modal" data-bs-target="#modal-default"><i class="far fa-trash-alt me-2"></i>Delete User</a>
+                      <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
+                        <div class="modal-dialog modal- modal-dialog-centered modal-" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h6 class="modal-title" id="modal-title-default">Delete User</h6>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true" style="color:black;">X</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <p style="text-align: left;">Are you sure you want to delete this User ?</p>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn bg-gradient-primary" onclick="confirmDeleteUser()">Delete User</button>
+                              <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
                     </div>
                   </li>
                 </ul>
@@ -328,10 +351,19 @@
                     <label>Initial Password</label>
                     <input type="text" class="form-control" id="cu_password" value="talkattea" required>
                   </div>
-                  <div class="form-group">
-                    <input class="form-check-input" type="checkbox" style="border:2px solid;" id="cu_isSuperUser">
-                    <label class="custom-control-label" for="cu_isSuperUser">Is Super-User ?</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="cu_isSuperUser">
+                    <label class="custom-control-label" for="customRadio1">Is Super-User</label>
                   </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="cu_isAdminUser">
+                    <label class="custom-control-label" for="customRadio2">Is Admin User</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="cu_isStaffUser" checked>
+                    <label class="custom-control-label" for="customRadio3">Is Staff</label>
+                  </div>
+
                   <div class="form-group">
                     <button class="btn btn-primary btn-sm">Create User</button>
                   </div>
@@ -370,6 +402,7 @@
         var div = document.getElementById("userInformationDiv");
         if (div.style.display === "none") {
           div.style.display = "block";
+          div.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
           div.style.display = "none";
         }
@@ -403,6 +436,7 @@
             getUserProfileDetails(id);
             div.style.display = "block";
           }
+          div.scrollIntoView({ behavior: 'smooth', block: 'start' });
           deleteButton.style.display = "block";
         }
       };
@@ -424,6 +458,16 @@
               var user_details = JSON.parse(data.userDetails);
               var user_profile_details = JSON.parse(data.userProfileDetails);
 
+              document.getElementById("userId").innerHTML = user_details[0].pk;
+              if(user_details[0].fields.is_superUser){
+                document.getElementById("userRole").innerHTML = "Super-Admin";
+              }
+              else if(user_details[0].fields.is_staff){
+                document.getElementById("userRole").innerHTML = "Staff Member";
+              }
+              else{
+                document.getElementById("userRole").innerHTML = "Admin";
+              }
               document.getElementById("fullName").innerHTML = user_details[0].fields.first_name + " " + user_details[0].fields.last_name;
               document.getElementById("emailAddress").innerHTML = user_details[0].fields.email;
               document.getElementById("primaryNumber").innerHTML = user_profile_details[0].fields.primary_mobile_number;
@@ -447,6 +491,7 @@
         var div = document.getElementById("createUserDiv");
         if (div.style.display === "none") {
           div.style.display = "block";
+          div.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
           div.style.display = "none";
         }
@@ -472,7 +517,9 @@
         var cu_username = document.getElementById("cu_username");
         var cu_password = document.getElementById("cu_password");
         var cu_isSuperUser = document.getElementById("cu_isSuperUser");
-        
+        var cu_isAdminUser = document.getElementById("cu_isAdminUser");
+        var cu_isStaffUser = document.getElementById("cu_isStaffUser");
+      
         const csrftoken = getCookie('csrftoken');
 
         fetch('/createNewUser', {
@@ -491,7 +538,9 @@
             'country': cu_country.value,
             'username': cu_username.value,
             'password': cu_password.value,
-            'isSuperUser': cu_isSuperUser.checked
+            'isSuperUser': cu_isSuperUser.checked,
+            'isAdminUser': cu_isAdminUser.checked,
+            'isStaffUser': cu_isStaffUser.checked
             })
         })
         .then(response => {
@@ -511,7 +560,6 @@
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
-        
       };
     </script>
 
@@ -532,6 +580,31 @@
       }
     </script>
     {% endif %}
+
+    <script>
+      function confirmDeleteUser(){
+        var userId = document.getElementById("userId").innerHTML;
+        var id = Number(userId);
+        fetch('/deleteUser/' + id)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+          if(data.hasError){
+            alert(data.message);
+          }
+          else{
+            window.location.reload(true);
+          }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+      };
+    </script>
 
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <script src="{% static 'AdminDashboardJs/adminDashboard.min.js' %}"></script>

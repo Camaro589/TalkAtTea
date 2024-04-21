@@ -29,4 +29,5 @@ urlpatterns = [
     path('showAllUserProfiles/', show_all_user_profiles, name = "showAllUserProfiles"),
     path('getUserDetails/<int:user_id>', get_user_details_with_id, name = "getUserDetails"),
     path('createNewUser', create_new_user, name = "createNewUser"),
+    path('deleteUser/<int:user_id>', delete_user, name = "deleteUser"),
 ]

@@ -189,8 +189,8 @@ def create_new_user(request):
                 username = post_data.get('username')
                 password = post_data.get('password')
                 is_super_user = post_data.get('isSuperUser')
+                is_staff_user = post_data.get('isStaffUser')
 
-                print(firstName, lastName, mobile, email, address, city, country, username, password, is_super_user)
                 if(User.objects.filter(username = username).exists()):
                     data = {"message": "Username \"" + username + "\" already exists. Please provide a different username.",
                             'hasError': True
@@ -202,9 +202,8 @@ def create_new_user(request):
                             }
                     return JsonResponse(data)
                 
-                user = User.objects.create_user(first_name = firstName, last_name = lastName, username = username, password = password, email = email, is_superuser = is_super_user)
+                user = User.objects.create_user(first_name = firstName, last_name = lastName, username = username, password = password, email = email, is_superuser = is_super_user, is_staff = is_staff_user)
                 user.save()
-                print("Done till here..")
 
                 profile = UserProfile.objects.create(user_id = user.pk)
                 user_profile_details = UserProfile.objects.get(user_id = user.pk)
@@ -228,3 +227,27 @@ def create_new_user(request):
     else:
         data = {"message": "fail"}
         return JsonResponse(data)
+
+def delete_user(request, user_id):
+
+    if request.user.is_authenticated:
+        try:
+            user_profile_to_delete = UserProfile.objects.get(user_id = user_id)
+            user_profile_to_delete.delete()
+            user_to_delete = User.objects.get(pk = user_id)
+            user_to_delete.delete()
+
+            data = {"message": "User Deleted", "hasErrors": False}
+            return JsonResponse(data)
+        
+        except Exception as error:
+            data = {"message": error,
+                    'hasError': True
+                    }
+            return JsonResponse(data)
+    else:
+        data = {"message": "You are not authenticated to perforn this Action.",
+                'hasError': True
+                }
+        return JsonResponse(data)
+    

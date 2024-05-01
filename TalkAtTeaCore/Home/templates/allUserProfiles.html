@@ -15,7 +15,182 @@
   <link href="{% static 'AdminDashboard/nucleo-svg.css' %}" rel="stylesheet" />
   <link id="pagestyle" href="{% static 'AdminDashboard/AdminDashboard.css' %}" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    function getPagination(table) {
+      var lastPage = 1;
+      $("#maxRows")
+        .on("click", function (evt) {  
+          lastPage = 1;
+          $(".pagination").find("li").slice(1, -1).remove();
+          var trnum = 0; 
+          var maxRows = parseInt($(this).val()); 
+          var totalRows = $(table + " tbody tr").length;
+
+          if (maxRows == 5000) {
+            $(".pagination").hide();
+          } else if (maxRows > totalRows){
+            $(".pagination").hide();
+          }
+           else {
+            $(".pagination").show();
+          }
+
+          $(table + " tr:gt(0)").each(function () {
+            trnum++; 
+            if (trnum > maxRows) {
+              $(this).hide(); 
+            }
+            if (trnum <= maxRows) {
+              $(this).show();
+            } 
+          }); 
+          if (totalRows > maxRows) {
+            var pagenum = Math.ceil(totalRows / maxRows); 
+            for (var i = 1; i <= pagenum; ) {
+              $(".pagination #prev")
+                .before(
+                  '<li data-page="' +
+                    i +
+                    '">\
+                      <span>' +
+                    i++ +
+                    '<span class="sr-only">(current)</span></span>\
+                    </li>'
+                )
+                .show();
+            } 
+          } 
+          $('.pagination [data-page="1"]').addClass("active");
+          $(".pagination li").on("click", function (evt) {
+            evt.stopImmediatePropagation();
+            evt.preventDefault();
+            var pageNum = $(this).attr("data-page"); 
+
+            var maxRows = parseInt($("#maxRows").val());
+
+            if (pageNum == "prev") {
+              if (lastPage == 1) {
+                return;
+              }
+              pageNum = --lastPage;
+            }
+            if (pageNum == "next") {
+              if (lastPage == $(".pagination li").length - 2) {
+                return;
+              }
+              pageNum = ++lastPage;
+            }
+
+            lastPage = pageNum;
+            var trIndex = 0;
+            $(".pagination li").removeClass("active");
+            $('.pagination [data-page="' + lastPage + '"]').addClass("active");
+            limitPagging();
+            $(table + " tr:gt(0)").each(function () {
+              trIndex++; 
+              if (
+                trIndex > maxRows * pageNum ||
+                trIndex <= maxRows * pageNum - maxRows
+              ) {
+                $(this).hide();
+              } else {
+                $(this).show();
+              }
+            }); 
+          }); 
+          limitPagging();
+        });
+    }
+    
+    function limitPagging() {    
+      if ($(".pagination li").length > 7) {
+        if ($(".pagination li.active").attr("data-page") <= 3) {
+          $(".pagination li:gt(5)").hide();
+          $(".pagination li:lt(5)").show();
+          $('.pagination [data-page="next"]').show();
+        }
+        if ($(".pagination li.active").attr("data-page") > 3) {
+          $(".pagination li:gt(0)").hide();
+          $('.pagination [data-page="next"]').show();
+          for (
+            let i = parseInt($(".pagination li.active").attr("data-page")) - 2;
+            i <= parseInt($(".pagination li.active").attr("data-page")) + 2;
+            i++
+          ) {
+            $('.pagination [data-page="' + i + '"]').show();
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .pagination {
+        display: inline-block;
+    }
+
+    .pagination li {
+        display: inline;
+        padding: 10px 15px;
+        margin: 2px;
+        border: 1px solid #ccc;
+        background-color: #f7f7f7;
+        cursor: pointer;
+        border-radius: 5px;
+        width: 50px; 
+        height: 50px; 
+        text-align: center; 
+        line-height: 50px;
+    }
+
+    .pagination li.active {
+        background-color: #172b4d;
+        color: #fff;
+    }
+
+    .pagination #prev,
+    .pagination #next {
+        cursor: pointer;
+    }
+
+    .pagination #prev.disabled {
+        display: none;
+    }
+
+    .pagination #next.disabled {
+        display: none;
+    }
+  </style>
+  <style>
+    select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 7px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
+        width: 100px;
+        height: 45px;
+        outline: none;
+    }
+
+    select option {
+      color: black;
+      background-color: white;
+    }
+
+    select option:checked {
+      color: white;
+      background-color: #172b4d;
+    }
+
+    select:hover,
+    select:focus {
+        border-color: #172b4d;
+    }
+  </style>
   
 </head>
 
@@ -167,12 +342,30 @@
         <div class="row">
           <div class="col-12">
             <div class="card mb-4">
-              <div class="card-header pb-0">
-                <h6>Users Table</h6>
-              </div>
+
+              <div class="row">
+                <div class="col-6">
+                  <div class="card-header pb-0">
+                    <h6>Users Table</h6>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="card-header pb-0" style="float: right;">
+                    <select name="state" id="maxRows">
+                      <option value="5000">All</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="5" selected>5</option>
+                      <option value="10">10</option>
+                      <option value="15">15</option>
+                    </select>
+                  </div>
+                </div>
+              </div><br>
+
               <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">
-                  <table class="table align-items-center mb-0">
+                  <table id="usersTable" class="display table align-items-center mb-0">
                     <thead>
                       <tr>
                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
@@ -239,9 +432,39 @@
                   </table>
                 </div>
               </div>
+
+              {% comment %} Pagination {% endcomment %}
+              <br>
+              <div class="row">
+                <div class="col-2">
+                </div>
+                <div class="col-8" style="display: grid; justify-content: center;">
+                  <div class='pagination-container' >
+                    <nav>
+                      <ul class="pagination">
+                        <li data-page="prev" >
+                          <span> < <span class="sr-only">(current)</span></span>
+                        </li>
+                        <script>
+                          getPagination("#usersTable");
+                        </script>
+                        <li data-page="next" id="prev">
+                            <span> > <span class="sr-only">(current)</span></span>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div
+                </div>
+                <div class="col-2">
+                </div>
+              </div>
+              {% comment %} Pagination {% endcomment %}
+              
             </div>
           </div>
         </div>
+
+        
 
         <div id="userInformationDiv" class="row" style="display:none;">
           <div class="col-12">
@@ -605,6 +828,13 @@
         });
       };
     </script>
+
+    <script>
+      $(document).ready(function() {
+        $("#maxRows").trigger("click");
+    });
+    </script>
+    
 
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <script src="{% static 'AdminDashboardJs/adminDashboard.min.js' %}"></script>

@@ -30,4 +30,7 @@ urlpatterns = [
     path('getUserDetails/<int:user_id>', get_user_details_with_id, name = "getUserDetails"),
     path('createNewUser', create_new_user, name = "createNewUser"),
     path('deleteUser/<int:user_id>', delete_user, name = "deleteUser"),
+    path('showAllRestaurants/', show_all_restaurants, name = "showAllRestaurants"),
+    path('showAllRestaurants/restaurantDetails/<int:restaurant_id>', specific_restaurant_details, name = "restaurantDetails"),
+    path('createNewRestaurant', create_new_restaurant, name = "createNewRestaurant"),
 ]

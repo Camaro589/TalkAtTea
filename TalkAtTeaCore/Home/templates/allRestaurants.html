@@ -1,0 +1,606 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <title>
+    Restaurants List
+  </title>
+
+  <link rel="icon" type="image/x-icon" href="{% static 'TalkAtTea_Logo_1.jpg' %}">
+  <link href="{% static 'AdminDashboard/nucleo-icons.css' %}" rel="stylesheet" />
+  <link href="{% static 'AdminDashboard/nucleo-svg.css' %}" rel="stylesheet" />
+  <link id="pagestyle" href="{% static 'AdminDashboard/AdminDashboard.css' %}" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    function getPagination(table) {
+      var lastPage = 1;
+      $("#maxRows")
+        .on("click", function (evt) {  
+          lastPage = 1;
+          $(".pagination").find("li").slice(1, -1).remove();
+          var trnum = 0; 
+          var maxRows = parseInt($(this).val()); 
+          var totalRows = $(table + " tbody tr").length;
+
+          if (maxRows == 5000) {
+            $(".pagination").hide();
+          } else if (maxRows > totalRows){
+            $(".pagination").hide();
+          }
+           else {
+            $(".pagination").show();
+          }
+
+          $(table + " tr:gt(0)").each(function () {
+            trnum++; 
+            if (trnum > maxRows) {
+              $(this).hide(); 
+            }
+            if (trnum <= maxRows) {
+              $(this).show();
+            } 
+          }); 
+          if (totalRows > maxRows) {
+            var pagenum = Math.ceil(totalRows / maxRows); 
+            for (var i = 1; i <= pagenum; ) {
+              $(".pagination #prev")
+                .before(
+                  '<li data-page="' +
+                    i +
+                    '">\
+                      <span>' +
+                    i++ +
+                    '<span class="sr-only">(current)</span></span>\
+                    </li>'
+                )
+                .show();
+            } 
+          } 
+          $('.pagination [data-page="1"]').addClass("active");
+          $(".pagination li").on("click", function (evt) {
+            evt.stopImmediatePropagation();
+            evt.preventDefault();
+            var pageNum = $(this).attr("data-page"); 
+
+            var maxRows = parseInt($("#maxRows").val());
+
+            if (pageNum == "prev") {
+              if (lastPage == 1) {
+                return;
+              }
+              pageNum = --lastPage;
+            }
+            if (pageNum == "next") {
+              if (lastPage == $(".pagination li").length - 2) {
+                return;
+              }
+              pageNum = ++lastPage;
+            }
+
+            lastPage = pageNum;
+            var trIndex = 0;
+            $(".pagination li").removeClass("active");
+            $('.pagination [data-page="' + lastPage + '"]').addClass("active");
+            limitPagging();
+            $(table + " tr:gt(0)").each(function () {
+              trIndex++; 
+              if (
+                trIndex > maxRows * pageNum ||
+                trIndex <= maxRows * pageNum - maxRows
+              ) {
+                $(this).hide();
+              } else {
+                $(this).show();
+              }
+            }); 
+          }); 
+          limitPagging();
+        });
+    }
+    
+    function limitPagging() {    
+      if ($(".pagination li").length > 7) {
+        if ($(".pagination li.active").attr("data-page") <= 3) {
+          $(".pagination li:gt(5)").hide();
+          $(".pagination li:lt(5)").show();
+          $('.pagination [data-page="next"]').show();
+        }
+        if ($(".pagination li.active").attr("data-page") > 3) {
+          $(".pagination li:gt(0)").hide();
+          $('.pagination [data-page="next"]').show();
+          for (
+            let i = parseInt($(".pagination li.active").attr("data-page")) - 2;
+            i <= parseInt($(".pagination li.active").attr("data-page")) + 2;
+            i++
+          ) {
+            $('.pagination [data-page="' + i + '"]').show();
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .pagination {
+        display: inline-block;
+    }
+
+    .pagination li {
+        display: inline;
+        padding: 10px 15px;
+        margin: 2px;
+        border: 1px solid #ccc;
+        background-color: #f7f7f7;
+        cursor: pointer;
+        border-radius: 5px;
+        width: 50px; 
+        height: 50px; 
+        text-align: center; 
+        line-height: 50px;
+    }
+
+    .pagination li.active {
+        background-color: #172b4d;
+        color: #fff;
+    }
+
+    .pagination #prev,
+    .pagination #next {
+        cursor: pointer;
+    }
+
+    .pagination #prev.disabled {
+        display: none;
+    }
+
+    .pagination #next.disabled {
+        display: none;
+    }
+  </style>
+
+  <style>
+    select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 7px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
+        width: 100px;
+        height: 45px;
+        outline: none;
+    }
+
+    select option {
+      color: black;
+      background-color: white;
+    }
+
+    select option:checked {
+      color: white;
+      background-color: #172b4d;
+    }
+
+    select:hover,
+    select:focus {
+        border-color: #172b4d;
+    }
+  </style>
+  
+</head>
+
+<body class="g-sidenav-show   bg-gray-100">
+
+  <div class="min-height-300 bg-secondary position-absolute w-100">
+    <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="img-fluid border-radius-lg" alt="Responsive image" style = "width: 100%; height: 300px;">
+  </div>
+
+  <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 dark-version" id="sidenav-main">
+    <div class="sidenav-header">
+      <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
+      <a class="navbar-brand m-0">
+        <img src="{% static 'TalkAtTea_Logo_2.png' %}" class="navbar-brand-img h-100" alt="main_logo">
+        <span class="ms-1 font-weight-bold">Talk At Tea</span>
+      </a>
+    </div>
+    <hr class="horizontal dark mt-0">
+    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'dashboard' %}">
+            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="#">
+            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Restaurants</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link " href="#">
+            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">Credits</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'showAllUserProfiles' %}">
+            <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="ni ni-support-16 text-info text-sm opacity-10"></i>
+            </div>
+            <span class="nav-link-text ms-1">User Profiles</span>
+          </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'userProfile' %}">
+                <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                <i class="ni ni-single-02 text-info text-sm"></i>
+                </div>
+                <span class="nav-link-text ms-1">My Profile</span>
+            </a>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content position-relative border-radius-lg ">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" data-scroll="true">
+      <div class="container-fluid py-1 px-3">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="#">Pages</a></li>
+            <li class="breadcrumb-item text-sm text-white active" aria-current="page">Restaurants</li>
+          </ol>
+          <h6 class="font-weight-bolder text-white mb-0">Restaurants List View</h6>
+        </nav>
+        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4">
+          <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+          </div>
+          <ul class="navbar-nav  justify-content-end">
+            <li class="nav-item d-flex align-items-center">
+              <a href="{% url 'userProfile' %}" class="nav-link text-white font-weight-bold px-0">
+                <i class="fa fa-user me-sm-1"></i>
+                <span class="d-sm-inline d-none">{{ user.username }}</span>
+              </a>
+            </li>
+            <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+              <a href="#" class="nav-link text-white p-0" id="iconNavbarSidenav">
+                <div class="sidenav-toggler-inner">
+                  <i class="sidenav-toggler-line bg-white"></i>
+                  <i class="sidenav-toggler-line bg-white"></i>
+                  <i class="sidenav-toggler-line bg-white"></i>
+                </div>
+              </a>
+            </li>
+            <li class="nav-item px-3 d-flex align-items-center">
+              <a href="Settings/" class="nav-link text-white p-0">
+                <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
+              </a>
+            </li>
+            <li class="nav-item dropdown pe-2 d-flex align-items-center">
+              <a href="#" class="nav-link text-white p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-bell cursor-pointer"></i>
+              </a>
+
+              <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
+
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="javascript:;">
+                    <div class="d-flex py-1">
+                      <div class="my-auto">
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold">New message</span> from Laur
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="javascript:;">
+                    <div class="d-flex py-1">
+                      <div class="my-auto">
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold">New album</span> by Travis Scott
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+
+              </ul>
+
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+
+    {% comment %} All Restaurants List {% endcomment %}
+
+    <div class="container-fluid py-4">
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card mb-4">
+
+              <div class="row">
+                <div class="col-6">
+                  <div class="card-header pb-0">
+                    <h6>All Restaurants</h6>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="card-header pb-0" style="float: right;">
+                    <select name="state" id="maxRows">
+                      <option value="5000">All</option>
+                      <option value="5" selected>5</option>
+                      <option value="10">10</option>
+                      <option value="15">15</option>
+                      <option value="15">20</option>
+                    </select>
+                  </div>
+                </div>
+              </div><br>
+
+              <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-0">
+                  <table id="restaurantsTable" class="display table align-items-center mb-0">
+                    <thead>
+                      <tr>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Restaurant Name</th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Address</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Rating</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Is Active</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+                      {% for restaurant in restaurantDetails %}
+                      <tr>
+                        <td style="padding-left: 15px;">
+                          <div class="text-center d-flex px-2 py-1">
+                            <div class="text-center d-flex flex-column justify-content-center">
+                              <a href="{% url 'restaurantDetails' restaurant_id=restaurant.pk %}" class="text-center text-primary font-weight-bold">
+                                <h6 class="mb-0 text-sm">{{restaurant.name}}</h6>
+                              </a>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                            <p class="text-xs font-weight-bold mb-0">{{restaurant.address}}</p>
+                        </td>
+                        <td class="align-middle text-center text-sm">
+                            <p class="text-xs font-weight-bold mb-0">{{restaurant.rating}}</p>
+                        </td>
+                        <td class="align-middle text-center text-sm">
+                          {% if restaurant.is_active %}
+                            <span class="badge badge-sm bg-gradient-success">Yes</span>
+                          {% else %}
+                            <span class="badge badge-sm bg-gradient-warning">No</span>
+                          {% endif %}
+                        </td>
+                      </tr>
+                      {% endfor %}
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {% comment %} Pagination {% endcomment %}
+              <br>
+              <div class="row">
+                <div class="col-2">
+                </div>
+                <div class="col-8" style="display: grid; justify-content: center;">
+                  <div class='pagination-container' >
+                    <nav>
+                      <ul class="pagination">
+                        <li data-page="prev" >
+                          <span> < <span class="sr-only">(current)</span></span>
+                        </li>
+                        <script>
+                          getPagination("#restaurantsTable");
+                        </script>
+                        <li data-page="next" id="prev">
+                            <span> > <span class="sr-only">(current)</span></span>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div
+                </div>
+                <div class="col-2">
+                </div>
+              </div>
+              {% comment %} Pagination {% endcomment %}
+              
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-9"><span></span></div>
+          <div class="col-sm-3"><span><button type="button" class="btn bg-gradient-primary btn-sm" style="float: right;" onclick="showAddRestaurantDiv()">
+            Add Restaurant</button></span>
+          </div>
+        </div>
+
+        <div id="createRestaurantDiv" class="row" style="display:none;">
+          <div class="col-12">
+            <div class="card mb-4">
+              <div class="card-header pb-0 px-3">
+                <h6>Create Restaurant</h6>
+              </div>
+              <div class="card-body pt-4 p-3">
+
+                <form id="submitRestaurant" method="post" onsubmit="createNewRestaurant(event)">
+                {% csrf_token %}
+                  <div class="form-group">
+                    <label>Restaurant Name</label>
+                    <input type="text" class="form-control" id="restaurantName" required>
+
+                    <label>Address</label>
+                    <textarea class="form-control" id="restaurantAddress" rows="3" required></textarea>
+
+                    <label>City</label>
+                    <input type="text" class="form-control" id="restaurantCity" required>
+
+                    <label>State</label>
+                    <input type="text" class="form-control" id="restaurantState" required>
+
+                    <label>Country</label>
+                    <input type="text" class="form-control" id="restaurantCountry" value="India" disabled>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="restaurantActive">
+                    <label class="custom-control-label" for="customCheck1">Is Restaurant Active ?</label>
+                  </div>
+                  <br>
+                  <div class="form-group">
+                    <button class="btn btn-primary btn-sm">Create Restaurant</button>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+    {% comment %} All Restaurants List {% endcomment %}
+    
+  </main>
+
+  <script>
+    function showAddRestaurantDiv(){
+      var div = document.getElementById("createRestaurantDiv");
+      if (div.style.display === "none") {
+        div.style.display = "block";
+        div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        div.style.display = "none";
+      }
+    };
+  </script>
+
+  <script>
+    function handleSubmit(event) {
+        event.preventDefault();
+    }
+  </script>
+
+  <script>
+    function createNewRestaurant(event){
+      handleSubmit(event);
+      var restaurantName = document.getElementById("restaurantName");
+      var restaurantAddress = document.getElementById("restaurantAddress");
+      var restaurantCity = document.getElementById("restaurantCity");
+      var restaurantState = document.getElementById("restaurantState");
+      var restaurantCountry = document.getElementById("restaurantCountry");
+      var restaurantActive = document.getElementById("restaurantActive");
+    
+      const csrftoken = getCookie('csrftoken');
+
+      fetch('/createNewRestaurant', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({
+          'restaurantName': restaurantName.value,
+          'restaurantAddress': restaurantAddress.value,
+          'restaurantCity': restaurantCity.value,
+          'restaurantState': restaurantState.value,
+          'restaurantCountry': restaurantCountry.value,
+          'restaurantActive': restaurantActive.checked
+          })
+      })
+      .then(response => {
+          if (response.ok) {
+              return response.json();
+          }
+          throw new Error('Network response was not ok.');
+      })
+      .then(data => {
+        if(data.hasError){
+          alert(data.message);
+        }
+        else{
+          window.location.reload(true);
+        }
+      })
+      .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+      });
+    };
+  </script>
+
+  <script>
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+    }
+  </script>
+
+  <script src="{% static 'AdminDashboardJs/popper.min.js' %}"></script>
+  <script src="{% static 'AdminDashboardJs/bootstrap.min.js' %}"></script>
+  <script src="{% static 'AdminDashboardJs/perfect-scrollbar.min.js' %}"></script>
+  <script src="{% static 'AdminDashboardJs/smooth-scrollbar.min.js' %}"></script>
+  <script src="{% static 'AdminDashboardJs/chartjs.min.js' %}"></script>
+
+    <script>
+      var win = navigator.platform.indexOf('Win') > -1;
+      if (win && document.querySelector('#sidenav-scrollbar')) {
+        var options = {
+          damping: '0.5'
+        }
+        Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+      }
+    </script>
+
+    <script>
+      $(document).ready(function() {
+        $("#maxRows").trigger("click");
+    });
+    </script>
+    
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="{% static 'AdminDashboardJs/adminDashboard.min.js' %}"></script>
+
+</body>
+
+</html>

@@ -6,6 +6,7 @@ class Restaurants(models.Model):
     name = models.CharField(max_length = 200)
     address = models.CharField(max_length = 300)
     rating = models.IntegerField()
+    is_active = models.BooleanField(default = False)
 
 
 class ItemCategory(models.Model):

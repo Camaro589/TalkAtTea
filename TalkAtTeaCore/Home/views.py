@@ -251,3 +251,71 @@ def delete_user(request, user_id):
                 }
         return JsonResponse(data)
     
+def show_all_restaurants(request):
+
+    if request.user.is_authenticated:
+        try:
+
+            restaurantDetails = Restaurants.objects.all().order_by('pk')
+            context = {'restaurantDetails' : restaurantDetails}
+
+            return render(request, 'allRestaurants.html', context = context)
+        except:
+            return render(request, 'allRestaurants.html')
+
+    else:
+        return redirect('view_admin_dashboard')
+       
+def specific_restaurant_details(request, restaurant_id):
+
+    if request.user.is_authenticated:
+        try:
+            restaurant = Restaurants.objects.filter(pk = restaurant_id)
+            context = {'restaurant' : restaurant}
+
+            return render(request, 'restaurantDetail.html', context = context)
+        except:
+            return render(request, 'restaurantDetail.html')
+
+    else:
+        return redirect('view_admin_dashboard')   
+
+def create_new_restaurant(request):
+
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+
+            try:
+                post_data = json.loads(request.body)
+                
+                restaurant_name = post_data.get('restaurantName')
+                restaurant_address = post_data.get('restaurantAddress')
+                restaurant_city = post_data.get('restaurantCity')
+                restaurant_state = post_data.get('restaurantState')
+                restaurant_country = post_data.get('restaurantCountry')
+                restaurant_is_active = post_data.get('restaurantActive')
+                default_rating = 0
+                complete_address = "{}, {}, {}, {}".format(restaurant_address.replace("\n", " "), restaurant_city, restaurant_state, restaurant_country)
+
+                new_restaurant = Restaurants()
+                new_restaurant.name = restaurant_name
+                new_restaurant.address = complete_address
+                new_restaurant.rating = default_rating
+                new_restaurant.is_active = restaurant_is_active
+                new_restaurant.save()
+
+                data = {"message": "Restaurant Created", "hasErrors": False}
+                return JsonResponse(data)
+            
+            except Exception as error:
+                data = {"message": error,
+                            'hasError': True
+                            }
+                return JsonResponse(data)
+        else:
+            data = {"message": "fail"}
+            return JsonResponse(data)
+    else:
+        data = {"message": "fail"}
+        return JsonResponse(data)
+    
